@@ -46,11 +46,22 @@ router.post('/', (req, res) => {
 
 router.post('/products', (req, res) => {
   // product collection 에 들어있는 모든 상품 가져오기
+
+  // Landing페이지에서 body로 받아옴  parseInt는 String인경우 숫자로 바꿔줌
+  // request.body.imit 있으면 지정해 준것으로 없으면 20으로
+  let limit = req.body.limit ? parseInt(req.body.limit) : 20;
+  // request.body.skip 이 있으면 지정해준것으로 없으면 처음부터(0)
+  let skip = req.body.skip ? parseInt(req.body.skip) : 0;
+
   Product.find()
     .populate('writer')
+    .skip(skip)
+    .limit(limit)
     .exec((err, productInfo) => {
       if (err) return res.status(400).json({ success: false, err });
-      return res.status(200).json({ success: true, productInfo });
+      return res
+        .status(200)
+        .json({ success: true, productInfo, postSize: productInfo.length });
     });
 });
 
